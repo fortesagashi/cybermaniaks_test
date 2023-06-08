@@ -5,8 +5,8 @@
 require_once "connection.php";
 
 // getting the users' firstnames and lastnames
-$query = "SELECT id, firstname, lastname FROM users";
-$result = $mysqli->query($query);
+$first_lastname = "SELECT id, firstname, lastname FROM users";
+$result = $mysqli->query($first_lastname);
 
 if ($result) {
     while ($row = $result->fetch_assoc()) {
@@ -15,8 +15,70 @@ if ($result) {
         $lastname = $row["lastname"];
         
         // printing the names in html tags
-        echo "$id. $firstname $lastname <a href='#' onclick=''>Details</a>";
-        echo "<br>";
+        echo "<div>";
+        echo "$id. $firstname $lastname";
+        echo "<a href='#' onclick='toggleData($id, event)'>Details</a>";
+
+        // hidden div
+        echo "<div id='user_$id' style='display:none;'>";
+
+        // creating a table for address, emails, and phone numbers
+        echo "<table>";
+        echo "<thead><tr><th>Address</th><th>Phone numbers</th><th>Emails</th></tr></thead>";
+        echo "<tbody>";
+
+        //fetching the emails for the selected user
+        $emailQuery = "SELECT email FROM email_addresses WHERE user_id = $id";
+        $emailResult = $mysqli->query($emailQuery);
+
+        // fetching the phone numbers for the selected user
+        $phoneQuery = "SELECT phone_number FROM phone_numbers WHERE user_id = $id";
+        $phoneResult = $mysqli->query($phoneQuery);
+
+        // fetching the address for the selected user
+        $addressQuery = "SELECT address, zip_city FROM users WHERE id = $id";
+        $addressResult = $mysqli->query($addressQuery);
+
+        // fetching and displaying address
+        echo "<tr><td>";
+        if ($addressResult && $addressResult->num_rows > 0) {
+            $addressRow = $addressResult->fetch_assoc();
+            $address = $addressRow["address"];
+            $zip_city = $addressRow["zip_city"];
+            echo "$address, $zip_city";
+        } else {
+            echo "No address found.";
+        }
+        echo "</td>";
+
+         // fetching and displaying  phone numbers
+         echo "<td>";
+         if ($phoneResult && $phoneResult->num_rows > 0) {
+             while ($phoneRow = $phoneResult->fetch_assoc()) {
+                 $phone = $phoneRow["phone_number"];
+                 echo "$phone<br>";
+             }
+         } else {
+             echo "No phone numbers found.";
+         }
+         echo "</td>";
+
+        // fetching and displaying emails
+        echo "<td>";
+        if ($emailResult && $emailResult->num_rows > 0) {
+            while ($emailRow = $emailResult->fetch_assoc()) {
+                $email = $emailRow["email"];
+                echo "$email<br>";
+            }
+        } else {
+            echo "No emails found.";
+        }
+        echo "</td></tr>";
+
+        echo "</tbody>";
+        echo "</table>";
+        echo "</div>";
+        echo "</div>";
     }
     $result->free();
 } else {
@@ -27,3 +89,18 @@ if ($result) {
 
 $mysqli->close();
 ?>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function toggleData(userId, event) {
+        var userDiv = $('#user_' + userId);
+
+        if (userDiv.is(':hidden')) {
+            userDiv.show();
+            $(event.target).text('Hide');
+        } else {
+            userDiv.hide();
+            $(event.target).text('Details');
+        }
+    }
+</script>
