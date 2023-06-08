@@ -5,7 +5,9 @@
 require_once "connection.php";
 
 // getting the users' firstnames and lastnames
-$first_lastname = "SELECT id, firstname, lastname FROM users";
+$first_lastname = "SELECT u.id, u.firstname, u.lastname, u.address, u.zip_city, c.name
+                    FROM users u
+                    LEFT JOIN countries c ON u.country_id = c.id";
 $result = $mysqli->query($first_lastname);
 
 if ($result) {
@@ -13,7 +15,10 @@ if ($result) {
         $id = $row["id"];
         $firstname = $row["firstname"];
         $lastname = $row["lastname"];
-        
+        $address = $row["address"];
+        $zip_city = $row["zip_city"];
+        $country = $row["name"];
+
         // printing the names in html tags
         echo "<div>";
         echo "$id. $firstname $lastname";
@@ -35,17 +40,12 @@ if ($result) {
         $phoneQuery = "SELECT phone_number FROM phone_numbers WHERE user_id = $id";
         $phoneResult = $mysqli->query($phoneQuery);
 
-        // fetching the address for the selected user
-        $addressQuery = "SELECT address, zip_city FROM users WHERE id = $id";
-        $addressResult = $mysqli->query($addressQuery);
 
-        // fetching and displaying address
+        // displaying address, country,phone numbers, and emails
         echo "<tr><td>";
-        if ($addressResult && $addressResult->num_rows > 0) {
-            $addressRow = $addressResult->fetch_assoc();
-            $address = $addressRow["address"];
-            $zip_city = $addressRow["zip_city"];
-            echo "$address, $zip_city";
+        if ($address && $zip_city) {
+            echo "$address, $zip_city<br>";
+            echo "Country: $country";
         } else {
             echo "No address found.";
         }
