@@ -21,6 +21,7 @@
     <ul>
         <li><a href="#" onclick="loadContent('login.php')">Login</a></li>
         <li><a href="#" onclick="loadContent('public_phonebook.php')">Public Phonebook</a></li>
+        <li><a href="#" onclick="loadContent('my_contact.php')">My contact</a></li>
     </ul>
 
     <!--- reloaded content --->

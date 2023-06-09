@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 08, 2023 at 12:34 AM
+-- Generation Time: Jun 09, 2023 at 08:55 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.1.17
 
@@ -53,16 +53,17 @@ INSERT INTO `countries` (`id`, `name`) VALUES
 CREATE TABLE `email_addresses` (
   `id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL
+  `email` varchar(255) DEFAULT NULL,
+  `is_hidden` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `email_addresses`
 --
 
-INSERT INTO `email_addresses` (`id`, `user_id`, `email`) VALUES
-(1, 1, 'fortesamgashi@gmail.com'),
-(2, 1, 'fortesa@gmail.com');
+INSERT INTO `email_addresses` (`id`, `user_id`, `email`, `is_hidden`) VALUES
+(1, 1, 'fortesamgashi@gmail.com', 1),
+(2, 1, 'fortesa@gmail.com', 0);
 
 -- --------------------------------------------------------
 
@@ -73,17 +74,18 @@ INSERT INTO `email_addresses` (`id`, `user_id`, `email`) VALUES
 CREATE TABLE `phone_numbers` (
   `id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
-  `phone_number` varchar(20) DEFAULT NULL
+  `phone_number` varchar(20) DEFAULT NULL,
+  `is_hidden` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `phone_numbers`
 --
 
-INSERT INTO `phone_numbers` (`id`, `user_id`, `phone_number`) VALUES
-(1, 1, '+38349546650'),
-(2, 1, '+383111111'),
-(3, 1, '+3944313131');
+INSERT INTO `phone_numbers` (`id`, `user_id`, `phone_number`, `is_hidden`) VALUES
+(1, 1, '+38349546650', 1),
+(2, 1, '+383111111', 1),
+(3, 1, '+3944313131', 0);
 
 -- --------------------------------------------------------
 
