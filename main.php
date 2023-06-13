@@ -18,15 +18,43 @@
 <body>
     <p>Phonebook</p>
     <!--- buttons for navigation --->
-    <ul>
-        <li><a href="#" onclick="loadContent('login.php')">Login</a></li>
-        <li><a href="#" onclick="loadContent('public_phonebook.php')">Public Phonebook</a></li>
-        <li><a href="#" onclick="loadContent('my_contact.php')">My contact</a></li>
-    </ul>
+    <?php
+        session_start();
 
-    <!--- reloaded content --->
-    <div id="block">
+        if (isset($_SESSION["username"])) {
+            //user is logged in
+            echo '
+            <ul>
+                <li><a href="#" onclick="loadContent(\'public_phonebook.php\')">Public Phonebook</a></li>
+                <li><a href="#" onclick="loadContent(\'my_contact.php\')">My contact</a></li>
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>';
+        } else {
+            // user is not logged in
+            echo '
+            <ul>
+                <li><a href="#" onclick="loadContent(\'login.php\')">Login</a></li>
+                <li><a href="#" onclick="loadContent(\'public_phonebook.php\')">Public Phonebook</a></li>
+            </ul>';
+        }
+
+        if (isset($_GET['logout'])) {
+            // removing the saved session
+            session_destroy();
+            header("Location: ".$_SERVER['PHP_SELF']);
+            exit();
+        }
+    ?>
+
+<div id="block">
         
-    </div>
+</div>
+<!---logout function--->
+<script>
+    function logout() {
+        window.location.href = '<?php echo $_SERVER['PHP_SELF']; ?>?logout=true';
+    }
+</script>
+
 </body>
 </html>
