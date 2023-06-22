@@ -1,6 +1,6 @@
 <?php
 session_start();
-<h2>Login<h2>
+
 // including the db connection file
 require_once 'connection.php';
 
@@ -12,11 +12,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     //checking the username and password in database
     $sql = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
     $result = $mysqli->query($sql);
+    $fetch = $result->fetch_assoc();
 
     if ($result->num_rows > 0) {
         // user logged in succesfully if rows are returned
         echo "Login successful!";
         $_SESSION["username"] = $username;
+        $_SESSION["userId"] = $fetch['id'];
         //redirecting to main page
         header("Location: main.php");
         exit();
@@ -27,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 ?>
 
-<h2>Login</h2>
+<p>Login</p>
 <form method="POST" action="<?php echo $_SERVER["PHP_SELF"]; ?>">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br>

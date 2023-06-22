@@ -1,13 +1,15 @@
-<h2>Public Phonebook</h2>
+<p>My contact</p>
 <?php
+session_start();
 // including the database connection
 require_once "connection.php";
-
+// getting username from session
+$username = $_SESSION["username"];
 // getting the user's firstnames and lastnames
-$first_lastname = "SELECT u.id, u.firstname, u.lastname, u.address, u.zip_city, c.name
+$first_lastname = "SELECT u.id, u.firstname, u.lastname, u.address, u.zip_city, c.id as cid, c.name, u.is_published
                     FROM users u
                     LEFT JOIN countries c ON u.country_id = c.id
-                    WHERE u.id = 1"; // Filter by user ID 1
+                    WHERE  u.username = '$username'"; // Filter by user ID 1
 $result = $mysqli->query($first_lastname);
 
 if ($result) {
@@ -18,11 +20,14 @@ if ($result) {
         $address = $row["address"];
         $zip_city = $row["zip_city"];
         $country = $row["name"];
+        $countryId = $row['cid'];
+        $isPublished = $row["is_published"];
 
+        echo "<form method='post' action='./savechanges.php'>"; 
         // printing the names in html tags
         echo "<div>";
 
-        // creating a table for address, emails, and phone numbers
+        // creating a form for address, emails, and phone numbers
         echo "<table>";
         echo "<thead><tr><th>Address</th><th>Phone numbers</th><th>Emails</th><th>Publish</th></tr></thead>";
         echo "<tbody>";
@@ -38,11 +43,15 @@ if ($result) {
         // displaying address, country, phone numbers, and emails
         echo "<tr><td>";
         if ($address && $zip_city) {
-            echo "<input type='text' name='address' value='$address'><br>";
-            echo "<input type='text' name='zip_city' value='$zip_city'><br>";
+            
+            echo "<input type='hidden' name='user_id' value='$id'>";
+            echo "Firstname: <input type='text' name='firstname' value='$firstname'><br>";
+            echo "Lastname: <input type='text' name='lastname' value='$lastname'><br>";
+            echo "Address: <input type='text' name='address' value='$address'><br>";
+            echo "ZIP/City: <input type='text' name='zip_city' value='$zip_city'><br>";
             echo "Country: ";
             echo "<select name='country'>";
-            echo "<option value=''>--Select Country--</option>";
+            echo "<option value='$country'>$country</option>";
             // fetching countries from the database
             $countryQuery = "SELECT id, name FROM countries";
             $countryResult = $mysqli->query($countryQuery);
@@ -50,9 +59,10 @@ if ($result) {
                 while ($countryRow = $countryResult->fetch_assoc()) {
                     $countryId = $countryRow['id'];
                     $countryName = $countryRow['name'];
-                    $selected = ($countryId == $row['country_id']) ? 'selected' : '';
-                    echo "<option value='$countryId' $selected>$countryName</option>";
+                    $selected = ($countryId == $row['country_id']) ? 'selected' : ''; // Add this line
+                    echo "<option value='$countryId' $selected>$countryName</option>"; // Modify this line
                 }
+                
             }
             echo "</select>";
         } else {
@@ -68,12 +78,13 @@ if ($result) {
                 $phone = $phoneRow["phone_number"];
                 $isHidden = $phoneRow["is_hidden"];
                 echo "<input type='text' name='phone[]' value='$phone'>";
-                echo "<input type='checkbox' name='hidePhoneNumber[]' value='$phoneId' " . ($isHidden ? "" : "checked") . "><br>";
+                echo "<input type='hidden' name='phoneId[]' value='$phoneId'>";
+                echo "<input type='checkbox' name='hidePhoneNumber".$phoneId  . "'  " . ($isHidden == 0 ? "" : "checked")  . "><br>";
             }
         } else {
             echo "No phone numbers found.";
         }
-        echo "<button onclick='addPhoneNumber($id)'>Add Phone</button>";
+        echo "<button type='button' onclick='addPhoneNumber($id)'>Add Phone</button>";
         echo "</td>";
 
         // fetching and displaying emails
@@ -84,23 +95,30 @@ if ($result) {
                 $email = $emailRow["email"];
                 $isHidden = $emailRow["is_hidden"];
                 echo "<input type='text' name='email[]' value='$email'>";
-                echo "<input type='checkbox' name='hideEmail[]' value='$emailId' " . ($isHidden ? "" : "checked") . "><br>";
+                echo "<input type='hidden' name='emailId[]' value='$emailId'>";
+                echo "<input type='checkbox' name='hideEmail".$emailId  . "'  " . ($isHidden == 0 ? "" : "checked")  . "><br>";
             }
         } else {
             echo "No emails found.";
         }
-        echo "<button onclick='addEmail($id)'>Add Email</button>";
+        echo "<button type='button' onclick='addEmail($id)'>Add Email</button>";
         echo "</td>";
 
         // checkbox for publishing the contact of the user
         echo "<td>";
-        echo "<input type='checkbox' name='publishContact[]' value='$id'> Publish<br>";
+        $isPublished = ($row['is_published'] == 1) ? true : false;
+        echo "<input type='checkbox' name='publishContact'  " . ($isPublished ? "checked" : "") . "> Publish<br>";
         echo "</td>";
 
         echo "</tr>";
 
         echo "</tbody>";
         echo "</table>";
+
+        // submit button
+        echo "<input type='submit' name='submit' value='Save Changes'>";
+
+        echo "</form>";
         echo "</div>";
     }
     $result->free();
@@ -108,6 +126,21 @@ if ($result) {
     // handling error for executing the query
     echo "Error executing the query: " . $mysqli->error;
 }
+
+// updating is_published variable if form is submitted
+if (isset($_POST['submit'])) {
+    if ($updateResult) {
+        ob_start(); 
+        include 'my_contact.php';
+        $content = ob_get_clean();
+        echo $content;
+        exit;
+    } else {
+        
+    }
+}
+
+
 
 $mysqli->close();
 ?>
@@ -130,3 +163,5 @@ $mysqli->close();
         emailsContainer.append(newHideEmailInput);
     }
 </script>
+</body>
+</html>

@@ -1,5 +1,4 @@
-
-<h2>Public Phonebook<h2>
+<p>Public phonebook</p>
 <?php
 // including the database connection
 require_once "connection.php";
@@ -7,7 +6,8 @@ require_once "connection.php";
 // getting the users' firstnames and lastnames
 $first_lastname = "SELECT u.id, u.firstname, u.lastname, u.address, u.zip_city, c.name
                     FROM users u
-                    LEFT JOIN countries c ON u.country_id = c.id";
+                    LEFT JOIN countries c ON u.country_id = c.id
+                    WHERE u.is_published = '1'";
 $result = $mysqli->query($first_lastname);
 
 if ($result) {
@@ -19,11 +19,11 @@ if ($result) {
         $zip_city = $row["zip_city"];
         $country = $row["name"];
 
-        // printing the names in html tags
-        echo "<div>";
+        // printing the names and details in html tags
+        echo "<div class='name-wrapper'>";
         echo "$id. $firstname $lastname";
-        echo "<a href='#' onclick='toggleData($id, event)'>Details</a>";
-
+        echo "&emsp;<a href='#' onclick='toggleData($id, event)'>view details</a>";
+        echo "</div>";
         // hidden div
         echo "<div id='user_$id' style='display:none;'>";
 
@@ -32,36 +32,38 @@ if ($result) {
         echo "<thead><tr><th>Address</th><th>Phone numbers</th><th>Emails</th></tr></thead>";
         echo "<tbody>";
 
-        //fetching the emails for the selected user
-        $emailQuery = "SELECT email FROM email_addresses WHERE user_id = $id";
+        // fetching the emails for the selected user
+        $emailQuery = "SELECT email FROM email_addresses WHERE user_id = $id AND is_hidden = 0";
         $emailResult = $mysqli->query($emailQuery);
 
         // fetching the phone numbers for the selected user
-        $phoneQuery = "SELECT phone_number FROM phone_numbers WHERE user_id = $id";
+        $phoneQuery = "SELECT phone_number FROM phone_numbers WHERE user_id = $id AND is_hidden = 0";
         $phoneResult = $mysqli->query($phoneQuery);
 
-
-        // displaying address, country,phone numbers, and emails
+        // displaying address, country, phone numbers, and emails
         echo "<tr><td>";
         if ($address && $zip_city) {
-            echo "$address, $zip_city<br>";
-            echo "Country: $country";
+            
+            echo "$firstname<br>";
+            echo "$lastname<br>";
+            echo "$address<br>";
+            echo "$zip_city<br>";
+            echo "$country";
         } else {
             echo "No address found.";
         }
         echo "</td>";
-
-         // fetching and displaying  phone numbers
-         echo "<td>";
-         if ($phoneResult && $phoneResult->num_rows > 0) {
-             while ($phoneRow = $phoneResult->fetch_assoc()) {
-                 $phone = $phoneRow["phone_number"];
-                 echo "$phone<br>";
-             }
-         } else {
-             echo "No phone numbers found.";
-         }
-         echo "</td>";
+        // fetching and displaying  phone numbers
+        echo "<td>";
+        if ($phoneResult && $phoneResult->num_rows > 0) {
+            while ($phoneRow = $phoneResult->fetch_assoc()) {
+                $phone = $phoneRow["phone_number"];
+                echo "$phone<br>";
+            }
+        } else {
+            echo "No phone numbers found.";
+        }
+        echo "</td>";
 
         // fetching and displaying emails
         echo "<td>";
@@ -86,7 +88,6 @@ if ($result) {
     echo "Error executing the query: " . $mysqli->error;
 }
 
-
 $mysqli->close();
 ?>
 
@@ -97,10 +98,10 @@ $mysqli->close();
 
         if (userDiv.is(':hidden')) {
             userDiv.show();
-            $(event.target).text('Hide');
+            $(event.target).text('hide details');
         } else {
             userDiv.hide();
-            $(event.target).text('Details');
+            $(event.target).text('view details');
         }
     }
 </script>

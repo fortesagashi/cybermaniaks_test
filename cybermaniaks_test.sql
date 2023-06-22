@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 09, 2023 at 08:55 AM
+-- Generation Time: Jun 22, 2023 at 12:45 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.1.17
 
@@ -78,15 +78,6 @@ CREATE TABLE `phone_numbers` (
   `is_hidden` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
---
--- Dumping data for table `phone_numbers`
---
-
-INSERT INTO `phone_numbers` (`id`, `user_id`, `phone_number`, `is_hidden`) VALUES
-(1, 1, '+38349546650', 1),
-(2, 1, '+383111111', 1),
-(3, 1, '+3944313131', 0);
-
 -- --------------------------------------------------------
 
 --
@@ -101,17 +92,18 @@ CREATE TABLE `users` (
   `lastname` varchar(255) NOT NULL,
   `address` varchar(255) NOT NULL,
   `zip_city` varchar(255) NOT NULL,
-  `country_id` int(11) DEFAULT NULL
+  `country_id` int(11) DEFAULT NULL,
+  `is_published` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `password`, `firstname`, `lastname`, `address`, `zip_city`, `country_id`) VALUES
-(1, 'fortesagashi', '12345678', 'Fortesa', 'Gashi', 'Suhareke', '23000 Suhareke', 3),
-(2, 'fluturag', '12345678', 'Flutura', 'Gashi', 'Suhareke', '23000, Suhareke', 3),
-(3, 'John', '12345678', 'John', 'John', 'Address, 202022', '123312 ', 5);
+INSERT INTO `users` (`id`, `username`, `password`, `firstname`, `lastname`, `address`, `zip_city`, `country_id`, `is_published`) VALUES
+(1, 'fortesagashi', '12345678', 'Fortesa', 'Gashi', 'Suhareke', '23000 Suhareke', 2, 0),
+(2, 'fluturag', '12345678', 'Flutura', 'Gashi', 'Suhareke', '23000, Suhareke', 2, 0),
+(3, 'John', '12345678', 'John', 'John', 'Address, 202022', '123312 ', 5, 1);
 
 --
 -- Indexes for dumped tables
@@ -158,13 +150,13 @@ ALTER TABLE `countries`
 -- AUTO_INCREMENT for table `email_addresses`
 --
 ALTER TABLE `email_addresses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `phone_numbers`
 --
 ALTER TABLE `phone_numbers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
 
 --
 -- AUTO_INCREMENT for table `users`
