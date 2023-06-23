@@ -51,7 +51,7 @@ if ($result) {
             echo "ZIP/City: <input type='text' name='zip_city' value='$zip_city'><br>";
             echo "Country: ";
             echo "<select name='country'>";
-            echo "<option value='$country'>$country</option>";
+            echo "<option value='$countryId'>$country</option>";
             // fetching countries from the database
             $countryQuery = "SELECT id, name FROM countries";
             $countryResult = $mysqli->query($countryQuery);
